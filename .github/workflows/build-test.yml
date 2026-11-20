@@ -1,0 +1,38 @@
+name: Build test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1'
+          bundler-cache: true
+      - name: Build with Jekyll
+        run: bundle exec jekyll build
+      - name: Verify generated pages
+        run: |
+          echo "--- Generated HTML files ---"
+          find _site -maxdepth 2 -type f -name "*.html" | sort
+          echo "--- Home page checks ---"
+          grep -q "Junteng Liu" _site/index.html
+          grep -q "Personal Details" _site/index.html
+          grep -q "Academic Background" _site/index.html
+          grep -q "Research Experience" _site/index.html
+          grep -q "SynLogic" _site/index.html
+          grep -q "Skills" _site/index.html
+          grep -q "Contact Information" _site/index.html
+          grep -q "jliugi@connect.ust.hk" _site/index.html
+          echo "--- Publications page checks ---"
+          grep -q "SynLogic" _site/publications/index.html
+          grep -q "C-Eval" _site/publications/index.html
+          echo "All checks passed"
